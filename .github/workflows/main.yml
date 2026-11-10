@@ -1,0 +1,95 @@
+
+name: Build TraduLive APK
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Tests et compilation Android
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: TraduLive/TraduLive
+
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+
+      - name: Installer Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Installer Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Installer Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.10.2"
+
+      - name: Télécharger les dépendances natives
+        run: bash scripts/fetch-native.sh
+
+      - name: Exécuter les tests unitaires
+        run: gradle --no-daemon testDebugUnitTest
+
+      - name: Compiler les APK Debug et Release
+        run: gradle --no-daemon assembleDebug assembleRelease
+
+      - name: Vérifier les APK générés
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          DEBUG_APK="app/build/outputs/apk/debug/app-debug.apk"
+          RELEASE_APK="app/build/outputs/apk/release/app-release.apk"
+
+          test -s "$DEBUG_APK"
+          test -s "$RELEASE_APK"
+
+          cp "$DEBUG_APK" TraduLive-debug.apk
+          cp "$RELEASE_APK" TraduLive.apk
+
+          for apk in TraduLive.apk TraduLive-debug.apk; do
+            echo "Vérification de $apk"
+
+            APK_CONTENTS="$(unzip -l "$apk")"
+
+            grep -q "lib/arm64-v8a/libsherpa-onnx-jni.so" <<< "$APK_CONTENTS"
+            grep -q "lib/arm64-v8a/libonnxruntime.so" <<< "$APK_CONTENTS"
+            grep -q "assets/silero_vad.onnx" <<< "$APK_CONTENTS"
+
+            echo "$apk : vérification réussie."
+          done
+
+          echo "Les deux APK ont été générés et vérifiés."
+
+      - name: Publier les APK comme artefacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: TraduLive-APK
+          path: |
+            TraduLive/TraduLive/TraduLive.apk
+            TraduLive/TraduLive/TraduLive-debug.apk
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Créer une Release GitHub
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.2.${{ github.run_number }}
+          name: TraduLive 1.2.${{ github.run_number }}
+          generate_release_notes: true
+          files: |
+            TraduLive/TraduLive/TraduLive.apk
+            TraduLive/TraduLive/TraduLive-debug.apk
