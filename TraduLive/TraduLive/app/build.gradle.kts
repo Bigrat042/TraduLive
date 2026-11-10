@@ -1,3 +1,4 @@
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -9,12 +10,12 @@ android {
 
     defaultConfig {
         applicationId = "app.tradulive"
-        minSdk = 29            // Android 10 : minimum pour capter le son interne
+        minSdk = 29
         targetSdk = 35
         versionCode = 3
         versionName = "1.2"
 
-        // OnePlus 15 = arm64 uniquement -> APK plus léger
+        // OnePlus 15 : architecture ARM64 uniquement
         ndk {
             abiFilters.add("arm64-v8a")
         }
@@ -23,7 +24,8 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
-            // Signé avec la clé de debug : installable directement, sans keystore à gérer
+
+            // Signé avec la clé de debug
             signingConfig = signingConfigs.getByName("debug")
         }
     }
@@ -32,11 +34,13 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
     kotlinOptions {
         jvmTarget = "17"
+        freeCompilerArgs += "-Xadd-modules=jdk.httpserver"
     }
 
-    // Le lint n'interrompt pas la compilation, mais il est exécuté et publié à chaque build (voir le workflow GitHub).
+    // Le lint ne bloque pas la compilation
     lint {
         abortOnError = false
         checkReleaseBuilds = false
@@ -45,8 +49,13 @@ android {
     }
 }
 
+// Activation du module HTTP du JDK pendant les tests
+tasks.withType<org.gradle.api.tasks.testing.Test>().configureEach {
+    jvmArgs("--add-modules=jdk.httpserver")
+}
+
 dependencies {
-    // Whisper + VAD sur le téléphone (sherpa-onnx). Le fichier est téléchargé par scripts/fetch-native.sh
+    // Whisper + VAD sur le téléphone (sherpa-onnx)
     implementation(files("libs/sherpa-onnx.aar"))
 
     // Traduction hors ligne (Google ML Kit)
@@ -59,8 +68,9 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.9.0")
 
-    // Lecture des archives .tar.bz2 (source de secours pour télécharger les modèles)
+    // Lecture des archives .tar.bz2
     implementation("org.apache.commons:commons-compress:1.27.1")
 
+    // Tests unitaires
     testImplementation("junit:junit:4.13.2")
 }
