@@ -1,90 +1,161 @@
+
 package app.tradulive
 
-import com.sun.net.httpserver.HttpExchange
-import com.sun.net.httpserver.HttpServer
 import kotlinx.coroutines.runBlocking
+import okhttp3.mockwebserver.Dispatcher
+import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.MockWebServer
+import okhttp3.mockwebserver.RecordedRequest
+import okhttp3.mockwebserver.SocketPolicy
+import okio.Buffer
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
 import java.io.IOException
-import java.net.InetSocketAddress
 import java.net.URL
 import java.nio.file.Files
+import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.atomic.AtomicInteger
 
-/** Vrai serveur HTTP local : on y simule coupures, absence de « Range », erreurs 404 et 416. */
+/**
+ * Tests HTTP de HttpFetcher.
+ * MockWebServer simule les réponses, coupures et erreurs réseau.
+ */
 class HttpFetcherTest {
 
-    private val data = ByteArray(3_000_000) { (it * 31 + it / 7).toByte() }
+    private val data = ByteArray(3_000_000) {
+        (it * 31 + it / 7).toByte()
+    }
 
-    private class Fixture(val server: HttpServer, val dir: File, val rangeHeaders: MutableList<String>, val requests: IntArray)
+    private class Fixture(
+        val server: MockWebServer,
+        val dir: File,
+        val rangeHeaders: MutableList<String>,
+        val requests: AtomicInteger
+    )
 
     private fun withServer(block: (Fixture) -> Unit) {
-        val server = HttpServer.create(InetSocketAddress("127.0.0.1", 0), 0)
+        val server = MockWebServer()
         val dir = Files.createTempDirectory("tradulive-test").toFile()
-        val ranges = ArrayList<String>()
-        val count = intArrayOf(0)
-        val fx = Fixture(server, dir, ranges, count)
+        val ranges = CopyOnWriteArrayList<String>()
+        val count = AtomicInteger(0)
 
-        fun serve(ex: HttpExchange, honorRange: Boolean, cutAfter: Int?) {
-            count[0]++
-            val range = ex.requestHeaders.getFirst("Range")
-            if (range != null) ranges.add(range)
-            var from = 0
-            var code = 200
-            if (range != null && honorRange) {
-                from = range.removePrefix("bytes=").removeSuffix("-").toInt()
-                code = 206
+        server.dispatcher = object : Dispatcher() {
+
+            private fun response(
+                code: Int,
+                body: ByteArray = data
+            ): MockResponse {
+                return MockResponse()
+                    .setResponseCode(code)
+                    .setBody(Buffer().write(body))
             }
-            val body = data.copyOfRange(from, data.size)
-            ex.sendResponseHeaders(code, body.size.toLong())
-            val out = ex.responseBody
-            try {
-                if (cutAfter != null && range == null) {
-                    out.write(body, 0, cutAfter) // on coupe en plein milieu, sans finir
-                    out.flush()
-                } else {
-                    out.write(body)
+
+            private fun rangeResponse(range: String): MockResponse {
+                val from = range
+                    .removePrefix("bytes=")
+                    .removeSuffix("-")
+                    .toInt()
+
+                return response(
+                    206,
+                    data.copyOfRange(from, data.size)
+                )
+            }
+
+            override fun dispatch(request: RecordedRequest): MockResponse {
+                count.incrementAndGet()
+
+                val path = request.path ?: "/"
+                val range = request.getHeader("Range")
+
+                if (range != null) {
+                    ranges.add(range)
                 }
-            } catch (_: IOException) {
-            } finally {
-                try {
-                    ex.close()
-                } catch (_: Exception) {
+
+                return when {
+
+                    path.startsWith("/full") -> {
+                        response(200)
+                    }
+
+                    path.startsWith("/cut") -> {
+                        if (range == null) {
+                            MockResponse()
+                                .setResponseCode(200)
+                                .setHeader("Content-Length", data.size)
+                                .setBody(Buffer().write(data))
+                                .setSocketPolicy(
+                                    SocketPolicy.DISCONNECT_DURING_RESPONSE_BODY
+                                )
+                        } else {
+                            rangeResponse(range)
+                        }
+                    }
+
+                    path.startsWith("/norange") -> {
+                        // Le serveur ignore volontairement Range.
+                        response(200)
+                    }
+
+                    path.startsWith("/missing") -> {
+                        MockResponse().setResponseCode(404)
+                    }
+
+                    path.startsWith("/r416") -> {
+                        if (range != null) {
+                            MockResponse().setResponseCode(416)
+                        } else {
+                            response(200)
+                        }
+                    }
+
+                    else -> {
+                        MockResponse().setResponseCode(404)
+                    }
                 }
             }
         }
 
-        server.createContext("/full") { serve(it, true, null) }
-        server.createContext("/cut") { serve(it, true, 1_200_000) }
-        server.createContext("/norange") { serve(it, false, null) }
-        server.createContext("/missing") { it.sendResponseHeaders(404, -1); it.close() }
-        server.createContext("/r416") {
-            count[0]++
-            if (it.requestHeaders.getFirst("Range") != null) {
-                it.sendResponseHeaders(416, -1); it.close()
-            } else {
-                serve(it, true, null)
-                count[0]--
-            }
-        }
-        server.start()
         try {
-            block(fx)
+            server.start()
+
+            block(
+                Fixture(
+                    server,
+                    dir,
+                    ranges,
+                    count
+                )
+            )
         } finally {
-            server.stop(0)
+            server.shutdown()
             dir.deleteRecursively()
         }
     }
 
-    private fun url(fx: Fixture, path: String) = URL("http://127.0.0.1:${fx.server.address.port}$path")
+    private fun url(fx: Fixture, path: String): URL {
+        return fx.server.url(path).toUrl()
+    }
 
     @Test
     fun downloadsAWholeFileAndChecksItsSize() = withServer { fx ->
         val target = File(fx.dir, "a.bin")
         var last = 0L
-        runBlocking { HttpFetcher.downloadWithRetry(url(fx, "/full"), target, data.size.toLong(), backoffMs = 10) { last = it } }
+
+        runBlocking {
+            HttpFetcher.downloadWithRetry(
+                url(fx, "/full"),
+                target,
+                data.size.toLong(),
+                backoffMs = 10
+            ) {
+                last = it
+            }
+        }
+
         assertTrue(target.readBytes().contentEquals(data))
         assertEquals(data.size.toLong(), last)
         assertFalse(File(fx.dir, "a.bin.part").exists())
@@ -93,26 +164,73 @@ class HttpFetcherTest {
     @Test
     fun resumesAfterAConnectionCut() = withServer { fx ->
         val target = File(fx.dir, "b.bin")
-        runBlocking { HttpFetcher.downloadWithRetry(url(fx, "/cut"), target, data.size.toLong(), backoffMs = 10) { } }
-        assertTrue("le contenu doit être identique octet pour octet", target.readBytes().contentEquals(data))
-        assertEquals("une seule reprise attendue", 1, fx.rangeHeaders.size)
-        val resumedFrom = fx.rangeHeaders[0].removePrefix("bytes=").removeSuffix("-").toLong()
-        assertTrue("la reprise doit partir de ce qui est déjà reçu (>0), pas de zéro : $resumedFrom", resumedFrom > 0)
+
+        runBlocking {
+            HttpFetcher.downloadWithRetry(
+                url(fx, "/cut"),
+                target,
+                data.size.toLong(),
+                backoffMs = 10
+            ) { }
+        }
+
+        assertTrue(
+            "Le contenu doit être identique octet pour octet",
+            target.readBytes().contentEquals(data)
+        )
+
+        assertEquals(
+            "Une seule reprise attendue",
+            1,
+            fx.rangeHeaders.size
+        )
+
+        val resumedFrom = fx.rangeHeaders[0]
+            .removePrefix("bytes=")
+            .removeSuffix("-")
+            .toLong()
+
+        assertTrue(
+            "La reprise doit partir de ce qui est déjà reçu : $resumedFrom",
+            resumedFrom > 0
+        )
     }
 
     @Test
     fun restartsWhenServerIgnoresRange() = withServer { fx ->
         val target = File(fx.dir, "c.bin")
-        File(fx.dir, "c.bin.part").writeBytes(ByteArray(100) { 7 }) // reste d'un téléchargement abandonné
-        runBlocking { HttpFetcher.downloadWithRetry(url(fx, "/norange"), target, data.size.toLong(), backoffMs = 10) { } }
+
+        File(fx.dir, "c.bin.part")
+            .writeBytes(ByteArray(100) { 7 })
+
+        runBlocking {
+            HttpFetcher.downloadWithRetry(
+                url(fx, "/norange"),
+                target,
+                data.size.toLong(),
+                backoffMs = 10
+            ) { }
+        }
+
         assertTrue(target.readBytes().contentEquals(data))
     }
 
     @Test
     fun recoversFrom416() = withServer { fx ->
         val target = File(fx.dir, "d.bin")
-        File(fx.dir, "d.bin.part").writeBytes(ByteArray(50) { 1 })
-        runBlocking { HttpFetcher.downloadWithRetry(url(fx, "/r416"), target, data.size.toLong(), backoffMs = 10) { } }
+
+        File(fx.dir, "d.bin.part")
+            .writeBytes(ByteArray(50) { 1 })
+
+        runBlocking {
+            HttpFetcher.downloadWithRetry(
+                url(fx, "/r416"),
+                target,
+                data.size.toLong(),
+                backoffMs = 10
+            ) { }
+        }
+
         assertTrue(target.readBytes().contentEquals(data))
     }
 
@@ -120,11 +238,21 @@ class HttpFetcherTest {
     fun failsClearlyOn404() = withServer { fx ->
         val target = File(fx.dir, "e.bin")
         var error: IOException? = null
+
         try {
-            runBlocking { HttpFetcher.downloadWithRetry(url(fx, "/missing"), target, null, attempts = 2, backoffMs = 10) { } }
+            runBlocking {
+                HttpFetcher.downloadWithRetry(
+                    url(fx, "/missing"),
+                    target,
+                    null,
+                    attempts = 2,
+                    backoffMs = 10
+                ) { }
+            }
         } catch (e: IOException) {
             error = e
         }
+
         assertTrue("IOException attendue", error != null)
         assertTrue(error!!.message!!.contains("404"))
         assertFalse(target.exists())
@@ -134,13 +262,25 @@ class HttpFetcherTest {
     fun rejectsAFileOfTheWrongSize() = withServer { fx ->
         val target = File(fx.dir, "f.bin")
         var error: IOException? = null
+
         try {
-            runBlocking { HttpFetcher.downloadWithRetry(url(fx, "/full"), target, 12345L, backoffMs = 10) { } }
+            runBlocking {
+                HttpFetcher.downloadWithRetry(
+                    url(fx, "/full"),
+                    target,
+                    12345L,
+                    backoffMs = 10
+                ) { }
+            }
         } catch (e: IOException) {
             error = e
         }
+
         assertTrue("IOException attendue", error != null)
         assertTrue(error!!.message!!.contains("corrompu"))
-        assertFalse("le fichier faux doit être supprimé", target.exists())
+        assertFalse(
+            "Le fichier incorrect doit être supprimé",
+            target.exists()
+        )
     }
 }
