@@ -3,7 +3,8 @@ name: Build TraduLive APK
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -11,13 +12,15 @@ permissions:
 
 jobs:
   build:
+    name: Tests et compilation Android
     runs-on: ubuntu-latest
+
     defaults:
       run:
-        working-directory: TraduLive
+        working-directory: TraduLive/TraduLive
 
     steps:
-      - name: Checkout
+      - name: Récupérer le dépôt
         uses: actions/checkout@v4
 
       - name: Installer Java 17
@@ -37,40 +40,56 @@ jobs:
       - name: Télécharger les dépendances natives
         run: bash scripts/fetch-native.sh
 
-      - name: Tests unitaires
+      - name: Exécuter les tests unitaires
         run: gradle --no-daemon testDebugUnitTest
 
-      - name: Compiler les APK
+      - name: Compiler les APK Debug et Release
         run: gradle --no-daemon assembleDebug assembleRelease
 
-      - name: Vérifier les APK
+      - name: Vérifier les APK générés
+        shell: bash
         run: |
-          set -e
-          cp app/build/outputs/apk/debug/app-debug.apk TraduLive-debug.apk
-          cp app/build/outputs/apk/release/app-release.apk TraduLive.apk
+          set -euo pipefail
+
+          DEBUG_APK="app/build/outputs/apk/debug/app-debug.apk"
+          RELEASE_APK="app/build/outputs/apk/release/app-release.apk"
+
+          test -s "$DEBUG_APK"
+          test -s "$RELEASE_APK"
+
+          cp "$DEBUG_APK" TraduLive-debug.apk
+          cp "$RELEASE_APK" TraduLive.apk
 
           for apk in TraduLive.apk TraduLive-debug.apk; do
-            unzip -l "$apk" | grep -q "lib/arm64-v8a/libsherpa-onnx-jni.so"
-            unzip -l "$apk" | grep -q "lib/arm64-v8a/libonnxruntime.so"
-            unzip -l "$apk" | grep -q "assets/silero_vad.onnx"
+            echo "Vérification de $apk"
+
+            APK_CONTENTS="$(unzip -l "$apk")"
+
+            grep -q "lib/arm64-v8a/libsherpa-onnx-jni.so" <<< "$APK_CONTENTS"
+            grep -q "lib/arm64-v8a/libonnxruntime.so" <<< "$APK_CONTENTS"
+            grep -q "assets/silero_vad.onnx" <<< "$APK_CONTENTS"
+
+            echo "$apk : vérification réussie."
           done
 
-          echo "APK vérifiés."
+          echo "Les deux APK ont été générés et vérifiés."
 
-      - name: Publier les APK
+      - name: Publier les APK comme artefacts
         uses: actions/upload-artifact@v4
         with:
           name: TraduLive-APK
           path: |
-            TraduLive/TraduLive.apk
-            TraduLive/TraduLive-debug.apk
+            TraduLive/TraduLive/TraduLive.apk
+            TraduLive/TraduLive/TraduLive-debug.apk
           if-no-files-found: error
+          retention-days: 30
 
       - name: Créer une Release GitHub
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v1.2.${{ github.run_number }}
           name: TraduLive 1.2.${{ github.run_number }}
+          generate_release_notes: true
           files: |
-            TraduLive/TraduLive.apk
-            TraduLive/TraduLive-debug.apk
+            TraduLive/TraduLive/TraduLive.apk
+            TraduLive/TraduLive/TraduLive-debug.apk
