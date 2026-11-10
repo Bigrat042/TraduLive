@@ -1,0 +1,12 @@
+== CPU
+CPU(s):                                  1
+Model name:                              Intel(R) Xeon(R) Processor @ 2.10GHz
+== Mémoire
+               total        used        free      shared  buff/cache   available
+Mem:            3990         522        2213          15        1493        3468
+== Java
+openjdk version "21.0.12.1" 2026-08-18
+== Kotlin
+kotlinc 2.0.21
+== sherpa-onnx (Linux x64 JNI, Python wheel et AAR)
+2.0.1

@@ -1,0 +1,66 @@
+[e2e:base partiels=true] flux de test : 35.8 s, 8 phrases
+---- chronologie (temps audio) ----
+t=  1.9s  partiel  phrase#1    1.0s d'audio  d?tect?='fr'  affich?=?       d?codage   332 ms  ? Bonjour ? tous. ?
+t=  2.4s  partiel  phrase#1    1.5s d'audio  d?tect?='fr'  affich?=?       d?codage   405 ms  ? Bonjour ? tous, aujourd'hui ?
+t=  2.9s  partiel  phrase#1    2.0s d'audio  d?tect?='fr'  affich?=fr?en   d?codage   414 ms  ? Bonjour ? tous, aujourd'hui... ?
+t=  3.4s  partiel  phrase#1    2.5s d'audio  d?tect?='fr'  affich?=fr?en   d?codage   526 ms  ? Bonjour ? tous, aujourd'hui, nous allons parler ?
+t=  3.9s  partiel  phrase#1    3.0s d'audio  d?tect?='fr'  affich?=fr?en   d?codage   701 ms  ? Bonjour ? tous, aujourd'hui, nous allons parler de l'histoire. ?
+t=  4.4s  partiel  phrase#1    3.5s d'audio  d?tect?='fr'  affich?=fr?en   d?codage   817 ms  ? Bonjour ? tous, aujourd'hui, nous allons parler de l'histoire de l'Emp ?
+t=  4.9s  partiel  phrase#1    4.0s d'audio  d?tect?='fr'  affich?=fr?en   d?codage   928 ms  ? Bonjour ? tous, aujourd'hui, nous allons parler de l'histoire de l'Emp ?
+t=  5.4s  partiel  phrase#1    4.5s d'audio  d?tect?='fr'  affich?=fr?en   d?codage   987 ms  ? Bonjour ? tous, aujourd'hui, nous allons parler de l'histoire de l'Emp ?
+t=  5.6s  FINAL   phrase#1    4.7s d'audio  d?tect?='fr'  affich?=fr?en   d?codage   986 ms  ? Bonjour ? tous, aujourd'hui, nous allons parler de l'histoire de l'Emp ?
+t=  7.1s  partiel  phrase#2    1.0s d'audio  d?tect?='fr'  affich?=fr?en   d?codage   300 ms  ? les l?gions ?
+t=  7.6s  partiel  phrase#2    1.5s d'audio  d?tect?='fr'  affich?=fr?en   d?codage   439 ms  ? Les lignes europ?ennes ont comptes ?
+t=  8.1s  partiel  phrase#2    2.0s d'audio  d?tect?='fr'  affich?=fr?en   d?codage   500 ms  ? Les religions rem?nent en conquim grand. ?
+t=  8.6s  partiel  phrase#2    2.5s d'audio  d?tect?='fr'  affich?=fr?en   d?codage   664 ms  ? Les l?gions rem?nent en conquim de grandes partidons. ?
+t=  9.1s  partiel  phrase#2    3.0s d'audio  d?tect?='fr'  affich?=fr?en   d?codage   847 ms  ? Les l?gions rem?nent en conquim une grande partie de leur opente. ?
+t=  9.6s  partiel  phrase#2    3.5s d'audio  d?tect?='fr'  affich?=fr?en   d?codage   942 ms  ? Les l?gions rem?nent en conquim de grandes parties de l'Europe en quel ?
+t= 10.1s  partiel  phrase#2    4.0s d'audio  d?tect?='fr'  affich?=fr?en   d?codage   950 ms  ? Les l?gions rem?nent en conquim une grande partie de l'Europe en quelq ?
+t= 10.6s  FINAL   phrase#2    4.5s d'audio  d?tect?='fr'  affich?=fr?en   d?codage   931 ms  ? Les l?gions rem?nent en conquim une grande partie de l'Europe en quelq ?
+t= 11.9s  partiel  phrase#3    1.0s d'audio  d?tect?='es'  affich?=fr?en   d?codage   265 ms  ? Hola a todos ?
+t= 12.4s  partiel  phrase#3    1.5s d'audio  d?tect?='es'  affich?=es?fr   d?codage   434 ms  ? Hola a todos, hoy vamos a... ?
+t= 12.9s  partiel  phrase#3    2.0s d'audio  d?tect?='es'  affich?=es?fr   d?codage   449 ms  ? Hola a todos, hoy vamos a hablar de ?
+t= 13.4s  partiel  phrase#3    2.5s d'audio  d?tect?='es'  affich?=es?fr   d?codage   542 ms  ? Hola a todos, hoy vamos a hablar de la historia ?
+t= 13.9s  partiel  phrase#3    3.0s d'audio  d?tect?='es'  affich?=es?fr   d?codage   639 ms  ? Hola a todos, hoy vamos a hablar de la historia de Espa?a. ?
+t= 14.4s  partiel  phrase#3    3.5s d'audio  d?tect?='es'  affich?=es?fr   d?codage   670 ms  ? Hola a todos, hoy vamos a hablar de la historia de Espa?a. ?
+t= 14.6s  FINAL   phrase#3    3.7s d'audio  d?tect?='es'  affich?=es?fr   d?codage   681 ms  ? Hola a todos, hoy vamos a hablar de la historia de Espa?a. ?
+t= 16.0s  partiel  phrase#4    1.0s d'audio  d?tect?='es'  affich?=es?fr   d?codage   278 ms  ? los romanos como ?
+t= 16.5s  partiel  phrase#4    1.5s d'audio  d?tect?='es'  affich?=es?fr   d?codage   357 ms  ? los humanos contisteron la ?
+t= 17.0s  partiel  phrase#4    2.0s d'audio  d?tect?='es'  affich?=es?fr   d?codage   465 ms  ? los humanos conquistaron la pen?nsula ?
+t= 17.5s  partiel  phrase#4    2.5s d'audio  d?tect?='es'  affich?=es?fr   d?codage   623 ms  ? Los romanos contistieron la pen?nsula y v?dica ?
+t= 18.0s  partiel  phrase#4    3.0s d'audio  d?tect?='es'  affich?=es?fr   d?codage   699 ms  ? los romanos contistaron la pen?nsula y v?dica hace m?s ?
+t= 18.5s  partiel  phrase#4    3.5s d'audio  d?tect?='es'  affich?=es?fr   d?codage   778 ms  ? Los romanos contistaron la pen?nsula y v?dica hace m?s de 2000 ?
+t= 19.0s  partiel  phrase#4    4.0s d'audio  d?tect?='es'  affich?=es?fr   d?codage   892 ms  ? Los romanos contistaron la pen?nsula y v?dica hace m?s de 2.000 a?os. ?
+t= 19.5s  partiel  phrase#4    4.5s d'audio  d?tect?='es'  affich?=es?fr   d?codage   957 ms  ? Los romanos contistaron la pen?nsula y v?dica hace m?s de 2.000 a?os. ?
+t= 19.7s  FINAL   phrase#4    4.7s d'audio  d?tect?='es'  affich?=es?fr   d?codage   910 ms  ? Los romanos contistaron la pen?nsula y v?dica hace m?s de 2000 a?os. ?
+t= 21.3s  partiel  phrase#5    1.0s d'audio  d?tect?='en'  affich?=es?fr   d?codage   279 ms  ? the low ever one ?
+t= 21.8s  partiel  phrase#5    1.5s d'audio  d?tect?='en'  affich?=en?fr   d?codage   370 ms  ? The Low Ever One today. ?
+t= 22.3s  partiel  phrase#5    2.0s d'audio  d?tect?='en'  affich?=en?fr   d?codage   370 ms  ? Hello everyone today we are ?
+t= 22.8s  partiel  phrase#5    2.5s d'audio  d?tect?='en'  affich?=en?fr   d?codage   474 ms  ? Hello everyone, today we are going to... ?
+t= 23.3s  partiel  phrase#5    3.0s d'audio  d?tect?='en'  affich?=en?fr   d?codage   539 ms  ? Hello everyone, today we are going to talk a- ?
+t= 23.8s  partiel  phrase#5    3.5s d'audio  d?tect?='en'  affich?=en?fr   d?codage   564 ms  ? Hello everyone, today we are going to talk about the ?
+t= 24.3s  partiel  phrase#5    4.0s d'audio  d?tect?='en'  affich?=en?fr   d?codage   682 ms  ? Hello everyone, today we are going to talk about the history of ?
+t= 24.8s  partiel  phrase#5    4.5s d'audio  d?tect?='en'  affich?=en?fr   d?codage   714 ms  ? Hello everyone, today we are going to talk about the history of the Ro ?
+t= 25.3s  partiel  phrase#5    5.0s d'audio  d?tect?='en'  affich?=en?fr   d?codage   779 ms  ? Hello everyone, today we are going to talk about the history of the Ro ?
+t= 25.8s  partiel  phrase#5    5.5s d'audio  d?tect?='en'  affich?=en?fr   d?codage   818 ms  ? Hello everyone, today we are going to talk about the history of the Ro ?
+t= 26.1s  FINAL   phrase#5    5.8s d'audio  d?tect?='en'  affich?=en?fr   d?codage   881 ms  ? Hello everyone, today we are going to talk about the history of the Ro ?
+t= 27.7s  partiel  phrase#6    1.0s d'audio  d?tect?='en'  affich?=en?fr   d?codage   273 ms  ? Thank you. ?
+t= 28.2s  FINAL   phrase#6    1.5s d'audio  d?tect?='en'  affich?=en?fr   d?codage   273 ms  ? Thank you. ?
+t= 29.8s  partiel  phrase#7    1.0s d'audio  d?tect?='de'  affich?=en?fr   d?codage   303 ms  ? Alles hat ein E. ?
+t= 30.3s  partiel  phrase#7    1.5s d'audio  d?tect?='de'  affich?=de?fr   d?codage   351 ms  ? Alles hat ein Ende. ?
+t= 30.8s  partiel  phrase#7    2.0s d'audio  d?tect?='de'  affich?=de?fr   d?codage   532 ms  ? Alles hat ein Ende, nur die Wur... ?
+t= 31.3s  partiel  phrase#7    2.5s d'audio  d?tect?='de'  affich?=de?fr   d?codage   612 ms  ? Alles hat ein Ende, nur die Wurst hat's. ?
+t= 31.8s  partiel  phrase#7    3.0s d'audio  d?tect?='de'  affich?=de?fr   d?codage   591 ms  ? Alles hat ein Ende, nur die Wurst hat zwei. ?
+t= 32.3s  FINAL   phrase#7    3.5s d'audio  d?tect?='de'  affich?=de?fr   d?codage   605 ms  ? Alles hat ein Ende, nur die Wurst hat zwei. ?
+t= 33.9s  partiel  phrase#8    1.0s d'audio  d?tect?='fr'  affich?=de?fr   d?codage   223 ms  ? Merci. ?
+t= 34.2s  FINAL   phrase#8    1.3s d'audio  d?tect?='fr'  affich?=fr?en   d?codage   240 ms  ? Merci. ?
+---- bilan ----
+phrases attendues : 8 ; phrases d?tect?es par le d?coupage (finals) : 8
+fr0  attendu=fr  final: affich?=fr?en d?tect?=fr OK     1er partiel: +0.9 s apr?s le d?but  fin de parole -> final: +0.56 s (temps audio, hors d?codage) + d?codage 986 ms
+fr1  attendu=fr  final: affich?=fr?en d?tect?=fr OK     1er partiel: +0.9 s apr?s le d?but  fin de parole -> final: +0.70 s (temps audio, hors d?codage) + d?codage 931 ms
+es0  attendu=es  final: affich?=es?fr d?tect?=es OK     1er partiel: +0.8 s apr?s le d?but  fin de parole -> final: +0.64 s (temps audio, hors d?codage) + d?codage 681 ms
+es1  attendu=es  final: affich?=es?fr d?tect?=es OK     1er partiel: +0.8 s apr?s le d?but  fin de parole -> final: +0.50 s (temps audio, hors d?codage) + d?codage 910 ms
+en0  attendu=en  final: affich?=en?fr d?tect?=en OK     1er partiel: +0.9 s apr?s le d?but  fin de parole -> final: +0.50 s (temps audio, hors d?codage) + d?codage 881 ms
+en2  attendu=en  final: affich?=en?fr d?tect?=en OK     1er partiel: +0.9 s apr?s le d?but  fin de parole -> final: +0.46 s (temps audio, hors d?codage) + d?codage 273 ms
+de   attendu=de  final: affich?=de?fr d?tect?=de OK     1er partiel: +0.9 s apr?s le d?but  fin de parole -> final: +0.61 s (temps audio, hors d?codage) + d?codage 605 ms
+fr2  attendu=fr  final: affich?=fr?en d?tect?=fr OK     1er partiel: aucun  fin de parole -> final: +0.58 s (temps audio, hors d?codage) + d?codage 240 ms

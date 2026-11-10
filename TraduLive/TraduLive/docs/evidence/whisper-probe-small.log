@@ -1,0 +1,24 @@
+[small] chargement du mod?le: 1570 ms
+[small] premier d?codage ? vide: 1118 ms
+[small] fr0         4.0s  lang='fr'   2741 ms  ? Bonjour ? tous, aujourd'hui nous allons parler de l'histoire de l'Empire romain. ?
+[small] fr1         3.7s  lang='fr'   2589 ms  ? Les Ligions Romaines ont conquis une grande partie de l'Europe en quelques si?cles. ?
+[small] fr2         0.7s  lang='fr'    711 ms  ? Merci. ?
+[small] es0         2.9s  lang='es'   1839 ms  ? Hola a todos, hoy vamos a hablar de la historia de Espa?a. ?
+[small] es1         4.0s  lang='es'   2690 ms  ? los romanos conquistaron la pen?nsula ib?rica hace m?s de 2.000 a?os. ?
+[small] es2         0.8s  lang='es'    692 ms  ? Gracias. ?
+[small] en0         5.2s  lang='en'   2286 ms  ? Hello everyone, today we are going to talk about the history of the Roman Empire. ?
+[small] en1         4.6s  lang='en'   2063 ms  ? The legions conquered a large part of Europe in just a few centuries. ?
+[small] en2         0.9s  lang='en'    744 ms  ? Thank you. ?
+[small] de          2.8s  lang='de'   1635 ms  ? Alles hat ein Ende, nur die Wurst hat zwei. ?
+[small] en_canary   3.8s  lang='en'   2370 ms  ? Ask not what your country can do for you. Ask what you can do for your country. ?
+[small] zh          5.6s  lang='zh'   1785 ms  ? ??????9????5? ?
+[small] ja          7.2s  lang='ja'   4212 ms  ? ????????????????????50????????????? ?
+[small] ko          4.6s  lang='ko'   1660 ms  ? ??? ??? ??? ?? ?? ?? ?? ?
+[small] audio= 1s ->   893 ms  (x0.89 temps r?el)  lang=fr  15 car.
+[small] audio= 2s ->  1170 ms  (x0.59 temps r?el)  lang=fr  27 car.
+[small] audio= 4s ->  2621 ms  (x0.66 temps r?el)  lang=fr  78 car.
+[small] audio= 8s ->  5192 ms  (x0.65 temps r?el)  lang=fr  164 car.
+[small] audio=12s ->  5745 ms  (x0.48 temps r?el)  lang=fr  164 car.
+[small] audio=18s -> 10216 ms  (x0.57 temps r?el)  lang=es  270 car.
+[small] audio=24s ->  6816 ms  (x0.28 temps r?el)  lang=es  142 car.
+DONE
